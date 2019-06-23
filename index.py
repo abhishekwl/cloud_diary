@@ -1,11 +1,18 @@
 import datetime
 from requests import get
+import sqlite3
 
 def fetch_public_ip():
     return get('https://api.ipify.org').text.strip()
 
 def print_diary():
     return
+
+def write_to_datastore(timestamp, content):
+    db = sqlite3.connect('datastore.db')
+    db.cursor().execute('INSERT INTO CONTENT VALUES(\'{}\',\'{}\')'.format(timestamp, content))
+    db.commit()
+    print('\nDB Write Success. See you tomorrow :)\n')
 
 if __name__ == "__main__":
     timestamp = str(datetime.datetime.now().date())
@@ -21,4 +28,4 @@ if __name__ == "__main__":
             exit()
         else:
             content+=str(line).strip()+'\n'
-    print('\n\nContent:\n{}'.format(content))
+    write_to_datastore(timestamp, content)
